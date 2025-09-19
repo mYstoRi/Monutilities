@@ -156,15 +156,24 @@ do
     tmp:close()
   end
 
-  app.alert{
-    title="CIT General Item",
-    text=(include_anim and
-      ("Wrote:\n" .. propsPath ..
-       "\n\nExported (texture):\n" .. pngPath ..
-       "\nAnimation (.mcmeta):\n" .. mcmetaPath ..
-       (export_display and ("\nDisplay (GIF 600%):\n" .. displayGif) or "")) or
-      ("Wrote:\n" .. propsPath ..
-       "\n\nExported (texture):\n" .. pngPath ..
-       (export_display and ("\nDisplay (PNG 600%):\n" .. displayPng) or "")))
-  }
+  -- Build a multi-line message for app.alert{ text = { ... } }
+local lines = { "Wrote:", propsPath, "", "Exported (texture):", pngPath }
+
+if include_anim then
+  lines[#lines+1] = ""
+  lines[#lines+1] = "Animation (.mcmeta):"
+  lines[#lines+1] = mcmetaPath
+end
+
+if export_display then
+  lines[#lines+1] = ""
+  lines[#lines+1] = include_anim and "Display (GIF 600%):" or "Display (PNG 600%):"
+  lines[#lines+1] = include_anim and displayGif or displayPng
+end
+
+app.alert{
+  title = "CIT General Item",
+  text  = lines
+}
+
 end
