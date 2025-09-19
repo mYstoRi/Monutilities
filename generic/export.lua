@@ -30,10 +30,8 @@ do
              text="Export vertical strip + write .png.mcmeta", selected=false }
 
   dlg:tab{ id="tab_output", text="Output" }
-     :entry{ id="output_dir", label="Output folder", text=defDir }
-     -- The file widget is used here just to *choose a folder*; we take its directory.
-     :file { id="output_dir_picker", label="Browse… (pick/enter any file inside target folder)",
-             save=true, entry=true, filename=app.fs.joinPath(defDir, title .. ".png") }
+     -- Use file picker to choose the target folder.
+     :file { id="output_path", label="Browse... (pick/enter any file inside target folder)", save=true, entry=true, filename=app.fs.joinPath(defDir, title .. ".png") }
      :check{ id="export_display", label="Display export",
              text="Also export 600% preview (PNG/GIF)", selected=false }
 
@@ -53,15 +51,20 @@ do
   local export_display= data.export_display and true or false
 
   if base_item == "" or item_name == "" then
-    return app.alert("Both “Base item” and “Item name” are required.")
+    return app.alert("Both \"Base item\" and \"Item name\" are required.")
   end
 
-  -- Resolve output directory:
-  local outDir = trim(data.output_dir)
-  if data.output_dir_picker and data.output_dir_picker ~= "" then
-    outDir = app.fs.filePath(data.output_dir_picker)
+  -- Resolve output directory from file picker
+  local chosenPath = trim(data.output_path or "")
+  local outDir = defDir
+  if chosenPath ~= "" then
+    local resolved = app.fs.filePath(chosenPath)
+    if resolved ~= "" then
+      outDir = resolved
+    else
+      outDir = chosenPath
+    end
   end
-  if outDir == "" then outDir = defDir end
   app.fs.makeAllDirectories(outDir)
 
   -- Output paths
@@ -171,7 +174,7 @@ end
     local meta = { animation = { frames = frames } }
 
     local minified = json.encode(meta)
-    local pretty   = json_pretty(minified, "  ") -- 2‑space indent (change if you like)
+    local pretty   = json_pretty(minified, "  ") -- 2-space indent (change if you like)
 
     local mf, mErr = io.open(mcmetaPath, "w")
     if not mf then return app.alert("Cannot write .mcmeta file:\n" .. tostring(mErr)) end

@@ -1,3 +1,5 @@
+-- This script is future work in progress and not yet integrated into the main workflow.
+
 local sprite = Sprite(80, 64)
 
 -- layers
