@@ -101,6 +101,49 @@ do
   end
 
   --------------------------------------------------------------------------
+  -- Helpers for pretty print json
+  --------------------------------------------------------------------------
+local function json_pretty(minified, indent)
+  indent = indent or "  " -- two spaces
+  local out, level, in_str, esc = {}, 0, false, false
+
+  for i = 1, #minified do
+    local ch = minified:sub(i, i)
+    if in_str then
+      table.insert(out, ch)
+      if esc then
+        esc = false
+      elseif ch == "\\" then
+        esc = true
+      elseif ch == '"' then
+        in_str = false
+      end
+    else
+      if ch == '"' then
+        in_str = true
+        table.insert(out, ch)
+      elseif ch == "{" or ch == "[" then
+        table.insert(out, ch)
+        level = level + 1
+        table.insert(out, "\n" .. string.rep(indent, level))
+      elseif ch == "}" or ch == "]" then
+        level = level - 1
+        table.insert(out, "\n" .. string.rep(indent, level) .. ch)
+      elseif ch == "," then
+        table.insert(out, ch .. "\n" .. string.rep(indent, level))
+      elseif ch == ":" then
+        table.insert(out, ": ")
+      elseif ch:match("%s") then
+        -- skip whitespace from minified input
+      else
+        table.insert(out, ch)
+      end
+    end
+  end
+  return table.concat(out)
+end
+
+  --------------------------------------------------------------------------
   -- 2) Export PNG + (optional) .png.mcmeta + (optional) display preview
   --------------------------------------------------------------------------
   if include_anim then
@@ -126,9 +169,13 @@ do
       frames[#frames+1] = { index = i-1, time = ticks }
     end
     local meta = { animation = { frames = frames } }
+
+    local minified = json.encode(meta)
+    local pretty   = json_pretty(minified, "  ") -- 2‑space indent (change if you like)
+
     local mf, mErr = io.open(mcmetaPath, "w")
     if not mf then return app.alert("Cannot write .mcmeta file:\n" .. tostring(mErr)) end
-    mf:write(json.encode(meta))
+    mf:write(pretty .. "\n")                     -- optional trailing newline
     mf:close()
 
     -- 2c) Optional display GIF at 600% (all frames)
