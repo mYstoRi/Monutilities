@@ -229,16 +229,21 @@ do
     local lines = {
       "type=item",
       "items=" .. itemsList,
-      "texture=" .. (title .. "_icon"),
     }
     local itemNameMatch = trim(data.item_name)
+    if material == "leather" then
+      table.insert(lines, ("texture.leather_%s=%s"):format(part, title .. "_icon"))
+      table.insert(lines, ("texture.leather_%s_overlay=%s"):format(part, title .. "_icon_overlay"))
+    else
+      table.insert(lines, "texture=" .. (title .. "_icon"))
+    end
     if itemNameMatch ~= "" then
       table.insert(lines, "nbt.plain.display.Name=" .. itemNameMatch)
     end
     writeFile(itemPropsPath, table.concat(lines, "\n") .. "\n")
   end
 
-  -- Armor (type=armor) - references texture.<vanilla_key>=<title>_armor
+-- Armor (type=armor) - references texture.<vanilla_key>=<title>_armor
   do
     local lines = {
       "type=armor",

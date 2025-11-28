@@ -26,7 +26,7 @@ do
   app.alert{
     title = "Bow Template",
     text = {
-      "Created 16x16 bow template with 6 frames.",
+      "16x16 (you can resize later) bow template with 6 frames.",
       "Frame 1 tag: standby (1.0s)",
       "Frames 2-6 tags: pulling_0-4 (0.2s each)",
       "All frames share a single 'Base' layer."
