@@ -198,7 +198,7 @@ do
   local armorPng          = app.fs.joinPath(outDir, title .. "_armor.png")
   local armorOverlayPng   = app.fs.joinPath(outDir, title .. "_armor_overlay.png")
 
-  local itemPropsPath     = app.fs.joinPath(outDir, title .. "_item.properties")
+  local itemPropsPath     = app.fs.joinPath(outDir, title .. "_icon.properties")
   local armorPropsPath    = app.fs.joinPath(outDir, title .. "_armor.properties")
 
   -- ---------- Export ICON ----------
